@@ -75,6 +75,25 @@ RSpec.describe Game, type: :model do
         # игра продолжается
         expect(game_w_questions.status).to eq(:in_progress)
         expect(game_w_questions.finished?).to be_falsey
+
+        game_w_questions.answer_current_question!('c')
+
+        expect(game_w_questions.answer_current_question!('c')).to eq(false)
+        expect(game_w_questions.current_level).to eq(level + 1)
+        expect(game_w_questions.previous_game_question).to eq(q)
+        expect(game_w_questions.current_game_question).not_to eq(q)
+        expect(game_w_questions.status).to eq(:fail)
+        expect(game_w_questions.finished?).to be_truthy
+
+        # game_w_questions.current_level = Question::QUESTION_LEVELS.max
+        # q1 = game_w_questions.current_game_question
+        # game_w_questions.answer_current_question!(q1.correct_answer_key)
+        # expect(game_w_questions.status).to eq(:won)
+        # expect(game_w_questions.finished?).to be_truthy
+
+        game_w_questions.created_at = 1.hour.ago
+        expect(game_w_questions.status).to eq(:timeout)
+        expect(game_w_questions.finished?).to be_truthy
       end
     end
 
