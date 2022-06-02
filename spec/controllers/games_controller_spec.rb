@@ -98,13 +98,26 @@ RSpec.describe GamesController, type: :controller do
     # юзер отвечает на игру корректно - игра продолжается
     it 'answers correct' do
       # передаем параметр params[:letter]
-      put :answer, id: game_w_questions.id, letter: game_w_questions.current_game_question.correct_answer_key
+      put :answer, id: game_w_questions.id,
+          letter: game_w_questions.current_game_question.correct_answer_key
       game = assigns(:game)
 
       expect(game.finished?).to be_falsey
       expect(game.current_level).to be > 0
       expect(response).to redirect_to(game_path(game))
       expect(flash.empty?).to be_truthy # удачный ответ не заполняет flash
+    end
+
+    it 'answers uncorrect' do
+      c = game_w_questions.current_level
+      put :answer, id: game_w_questions.id,
+          letter: 'c'
+      game = assigns(:game)
+
+      expect(game.finished?).to be_truthy
+      expect(game.current_level).to be > c - 1
+      expect(response).to redirect_to(user)
+      expect(flash.empty?).to be_falsey
     end
 
     # тест на отработку "помощи зала"
