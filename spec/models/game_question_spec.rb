@@ -1,5 +1,3 @@
-# (c) goodprogrammer.ru
-
 require 'rails_helper'
 
 # Тестовый сценарий для модели игрового вопроса,
@@ -41,6 +39,21 @@ RSpec.describe GameQuestion, type: :model do
         expect(game_question.correct_answer_key).to eq('b')
       end
     end
+
+    describe '#help_hash' do
+      it 'should return correct help_hash' do
+        expect(game_question.help_hash).to eq({})
+
+        game_question.help_hash[:some_key1] = 'a1'
+        game_question.help_hash['some_key2'] = 'a2'
+
+        expect(game_question.save).to be_truthy
+
+        gq = GameQuestion.find(game_question.id)
+
+        expect(gq.help_hash).to eq({ some_key1: 'a1', 'some_key2' => 'a2' })
+      end
+    end
   end
 
   # help_hash у нас имеет такой формат:
@@ -62,6 +75,33 @@ RSpec.describe GameQuestion, type: :model do
 
         ah = game_question.help_hash[:audience_help]
         expect(ah.keys).to contain_exactly('a', 'b', 'c', 'd')
+      end
+    end
+
+    describe '#add_fifty_fifty' do
+      it 'should work correct' do
+        expect(game_question.help_hash).not_to include(:fifty_fifty)
+
+        game_question.add_fifty_fifty
+
+        expect(game_question.help_hash).to include(:fifty_fifty)
+
+        ff = game_question.help_hash[:fifty_fifty]
+        expect(ff).to include('b')
+        expect(ff.size).to eq 2
+      end
+    end
+
+    describe '#friend_call' do
+      it 'should work correct' do
+        expect(game_question.help_hash).not_to include(:friend_call)
+
+        game_question.add_friend_call
+
+        expect(game_question.help_hash).to include(:friend_call)
+
+        fc = game_question.help_hash[:friend_call]
+        expect(fc).to be
       end
     end
   end
