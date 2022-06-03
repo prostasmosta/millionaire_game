@@ -29,7 +29,6 @@ RSpec.feature 'USER creates a game', type: :feature do
   scenario 'successfully' do
     # Заходим на главную
     visit '/'
-
     # Кликаем по ссылке "Новая игра"
     click_link 'Новая игра'
 

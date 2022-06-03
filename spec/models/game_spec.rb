@@ -48,8 +48,8 @@ RSpec.describe Game, type: :model do
     end
 
     describe '#previous_level' do
-      it 'should return true' do
-        expect(game_w_questions.previous_level).to eq(game_w_questions.current_level - 1)
+      it 'should return -1 level at new game' do
+        expect(game_w_questions.previous_level).to eq(-1)
       end
     end
   end

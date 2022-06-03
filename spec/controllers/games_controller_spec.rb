@@ -176,7 +176,7 @@ RSpec.describe GamesController, type: :controller do
     end
 
     context 'Usual user' do
-      before(:each) { sign_in user }
+      before { sign_in user }
 
       it 'uses audience help' do
         # сперва проверяем что в подсказках текущего вопроса пусто
