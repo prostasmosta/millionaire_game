@@ -42,7 +42,7 @@ RSpec.describe Game, type: :model do
 
   context 'game status' do
     describe '#current_game_question' do
-      it 'returns current level' do
+      it 'returns current question' do
         expect(game_w_questions.current_game_question).to eq(game_w_questions.game_questions.first)
       end
     end
@@ -133,7 +133,7 @@ RSpec.describe Game, type: :model do
         prize = game_w_questions.prize
         expect(prize).to be > 0
         expect(game_w_questions.status).to eq :money
-        expect(game_w_questions.finished?).to be_truthy
+        expect(game_w_questions.finished?).to be true
         expect(user.balance).to eq prize
       end
     end
@@ -142,7 +142,7 @@ RSpec.describe Game, type: :model do
   describe '#status' do
     before(:each) do
       game_w_questions.finished_at = Time.now
-      expect(game_w_questions.finished?).to be_truthy
+      expect(game_w_questions.finished?).to be true
     end
 
     it 'should :won' do
