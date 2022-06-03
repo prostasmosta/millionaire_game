@@ -66,7 +66,7 @@ RSpec.describe GameQuestion, type: :model do
 
   context 'user helpers' do
     describe '#add_audience_help' do
-      it 'should work correct' do
+      it 'should add audience help to help hash' do
         expect(game_question.help_hash).not_to include(:audience_help)
 
         game_question.add_audience_help
@@ -79,7 +79,7 @@ RSpec.describe GameQuestion, type: :model do
     end
 
     describe '#add_fifty_fifty' do
-      it 'should work correct' do
+      it 'should add fifty-fifty help to help hash' do
         expect(game_question.help_hash).not_to include(:fifty_fifty)
 
         game_question.add_fifty_fifty
@@ -93,7 +93,7 @@ RSpec.describe GameQuestion, type: :model do
     end
 
     describe '#friend_call' do
-      it 'should work correct' do
+      it 'should add friend call help to help hash' do
         expect(game_question.help_hash).not_to include(:friend_call)
 
         game_question.add_friend_call
@@ -101,7 +101,7 @@ RSpec.describe GameQuestion, type: :model do
         expect(game_question.help_hash).to include(:friend_call)
 
         fc = game_question.help_hash[:friend_call]
-        expect(fc).to be
+        expect(fc).to include('считает, что это вариант')
       end
     end
   end
