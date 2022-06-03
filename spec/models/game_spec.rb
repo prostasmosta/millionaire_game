@@ -110,7 +110,7 @@ RSpec.describe Game, type: :model do
         end
 
         context 'and time is over ' do
-          let(:game_w_questions) { game_w_questions.created_at = 1.hour.ago }
+          let(:game_w_questions) { FactoryBot.create(:game_with_questions, user: user, created_at: 1.hour.ago) }
 
           it 'should finish game' do
             expect(game_w_questions.finished?).to be true
@@ -119,7 +119,6 @@ RSpec.describe Game, type: :model do
           it 'should assign status timeout' do
             expect(game_w_questions.status).to eq(:timeout)
           end
-
         end
       end
     end
