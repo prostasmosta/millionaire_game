@@ -8,10 +8,10 @@ require 'support/my_spec_helper' # наш собственный класс с �
 # в этом классе содержится ключевая логика игры и значит работы сайта.
 RSpec.describe Game, type: :model do
   # пользователь для создания игр
-  let(:user) { FactoryBot.create(:user) }
+  let(:user) { create(:user) }
 
   # игра с прописанными игровыми вопросами
-  let(:game_w_questions) { FactoryBot.create(:game_with_questions, user: user) }
+  let(:game_w_questions) { create(:game_with_questions, user: user) }
 
   # Группа тестов на работу фабрики создания новых игр
   context 'Game Factory' do
@@ -58,8 +58,9 @@ RSpec.describe Game, type: :model do
   context 'game mechanics' do
     describe '#answer_current_question!' do
       context 'when answer is wrong' do
-        let(:wrong_answer_key) { (%w[a b c d] -
-          [game_w_questions.current_game_question.correct_answer_key]).sample }
+        let(:wrong_answer_key) do
+          %w[a b c d].grep_v [game_w_questions.current_game_question.correct_answer_key].sample
+        end
 
         before { game_w_questions.answer_current_question!(wrong_answer_key) }
 
@@ -80,7 +81,7 @@ RSpec.describe Game, type: :model do
 
         context 'and question is last' do
           let(:level) { Question::QUESTION_LEVELS.max }
-          let(:game_w_questions) { FactoryBot.create(:game_with_questions, user: user, current_level: level) }
+          let(:game_w_questions) { create(:game_with_questions, user: user, current_level: level) }
 
           it 'should assign final prize' do
             expect(game_w_questions.prize).to eq(Game::PRIZES.last)
@@ -110,7 +111,7 @@ RSpec.describe Game, type: :model do
         end
 
         context 'and time is over ' do
-          let(:game_w_questions) { FactoryBot.create(:game_with_questions, user: user, created_at: 1.hour.ago) }
+          let(:game_w_questions) { create(:game_with_questions, user: user, created_at: 1.hour.ago) }
 
           it 'should finish game' do
             expect(game_w_questions.finished?).to be true
@@ -140,7 +141,7 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#status' do
-    before(:each) do
+    before do
       game_w_questions.finished_at = Time.now
       expect(game_w_questions.finished?).to be true
     end
