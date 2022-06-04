@@ -1,13 +1,7 @@
-# (c) goodprogrammer.ru
-
 require 'rails_helper'
 require 'support/my_spec_helper' # наш собственный класс с вспомогательными методами
 
-# Тестовый сценарий для модели Игры
-# В идеале - все методы должны быть покрыты тестами,
-# в этом классе содержится ключевая логика игры и значит работы сайта.
 RSpec.describe Game, type: :model do
-  # пользователь для создания игр
   let(:user) { create(:user) }
 
   # игра с прописанными игровыми вопросами
@@ -54,7 +48,6 @@ RSpec.describe Game, type: :model do
     end
   end
 
-  # тесты на основную игровую логику
   context 'game mechanics' do
     describe '#answer_current_question!' do
       context 'when answer is wrong' do

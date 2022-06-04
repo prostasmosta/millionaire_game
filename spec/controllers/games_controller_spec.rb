@@ -8,9 +8,9 @@ require 'support/my_spec_helper' # наш собственный класс с �
 #   3. на передачу граничных/неправильных данных в попытке сломать контроллер
 #
 RSpec.describe GamesController, type: :controller do
-  let(:user) { FactoryBot.create(:user) }
-  let(:admin) { FactoryBot.create(:user, is_admin: true) }
-  let(:game_w_questions) { FactoryBot.create(:game_with_questions, user: user) }
+  let(:user) { create(:user) }
+  let(:admin) { create(:user, is_admin: true) }
+  let(:game_w_questions) { create(:game_with_questions, user: user) }
 
   describe '#show' do
     context 'Anon' do
@@ -29,7 +29,7 @@ RSpec.describe GamesController, type: :controller do
       it 'should show the game' do
         get :show, id: game_w_questions.id
         game = assigns(:game) # вытаскиваем из контроллера поле @game
-        expect(game.finished?).to be_falsey
+        expect(game.finished?).to be false
         expect(game.user).to eq(user)
 
         expect(response.status).to eq(200)
@@ -68,7 +68,7 @@ RSpec.describe GamesController, type: :controller do
         post :create
         game = assigns(:game) # вытаскиваем из контроллера поле @game
 
-        expect(game.finished?).to be_falsey
+        expect(game.finished?).to be false
         expect(game.user).to eq(user)
         # и редирект на страницу этой игры
         expect(response).to redirect_to(game_path(game))
@@ -110,10 +110,10 @@ RSpec.describe GamesController, type: :controller do
               letter: game_w_questions.current_game_question.correct_answer_key
           game = assigns(:game)
 
-          expect(game.finished?).to be_falsey
+          expect(game.finished?).to be false
           expect(game.current_level).to be > 0
           expect(response).to redirect_to(game_path(game))
-          expect(flash.empty?).to be_truthy
+          expect(flash.empty?).to be true
         end
       end
 
@@ -124,10 +124,10 @@ RSpec.describe GamesController, type: :controller do
               letter: 'c'
           game = assigns(:game)
 
-          expect(game.finished?).to be_truthy
+          expect(game.finished?).to be true
           expect(game.current_level).to be > c - 1
           expect(response).to redirect_to(user)
-          expect(flash.empty?).to be_falsey
+          expect(flash.empty?).to be false
         end
       end
     end
@@ -152,7 +152,7 @@ RSpec.describe GamesController, type: :controller do
         put :take_money, id: game_w_questions.id
         game = assigns(:game)
 
-        expect(game.finished?).to be_truthy
+        expect(game.finished?).to be true
         expect(game.prize).to eq(200)
 
         user.reload
@@ -181,15 +181,15 @@ RSpec.describe GamesController, type: :controller do
       it 'uses audience help' do
         # сперва проверяем что в подсказках текущего вопроса пусто
         expect(game_w_questions.current_game_question.help_hash[:audience_help]).not_to be
-        expect(game_w_questions.audience_help_used).to be_falsey
+        expect(game_w_questions.audience_help_used).to be false
 
         # фигачим запрос в контроллер с нужным типом
         put :help, id: game_w_questions.id, help_type: :audience_help
         game = assigns(:game)
 
         # проверяем, что игра не закончилась, что флажок установился, и подсказка записалась
-        expect(game.finished?).to be_falsey
-        expect(game.audience_help_used).to be_truthy
+        expect(game.finished?).to be false
+        expect(game.audience_help_used).to be true
         expect(game.current_game_question.help_hash[:audience_help]).to be
         expect(game.current_game_question.help_hash[:audience_help].keys).to contain_exactly('a', 'b', 'c', 'd')
         expect(response).to redirect_to(game_path(game))
@@ -202,8 +202,8 @@ RSpec.describe GamesController, type: :controller do
         put :help, id: game_w_questions.id, help_type: :fifty_fifty
         game = assigns(:game)
 
-        expect(game.finished?).to be_falsey
-        expect(game.fifty_fifty_used).to be_truthy
+        expect(game.finished?).to be false
+        expect(game.fifty_fifty_used).to be true
         expect(game.current_game_question.help_hash[:fifty_fifty]).to be
         expect(game.current_game_question.help_hash[:fifty_fifty]).to include(game.current_game_question
                                                                                   .correct_answer_key)
