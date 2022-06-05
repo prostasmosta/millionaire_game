@@ -24,7 +24,7 @@ RSpec.describe GamesController, type: :controller do
     end
 
     context 'Usual user' do
-      before(:each) { sign_in user } # логиним юзера user с помощью спец. Devise метода sign_in
+      before { sign_in user } # логиним юзера user с помощью спец. Devise метода sign_in
 
       it 'should show the game' do
         get :show, id: game_w_questions.id
@@ -37,7 +37,7 @@ RSpec.describe GamesController, type: :controller do
       end
 
       it '#show alien game' do
-        alien_game = FactoryBot.create(:game_with_questions)
+        alien_game = create(:game_with_questions)
         get :show, id: alien_game.id
 
         expect(response.status).not_to eq(200)
@@ -59,7 +59,7 @@ RSpec.describe GamesController, type: :controller do
     end
 
     context 'Usual user' do
-      before(:each) { sign_in user }
+      before { sign_in user }
 
       it 'should create game' do
         # сперва накидаем вопросов, из чего собирать новую игру
@@ -90,43 +90,73 @@ RSpec.describe GamesController, type: :controller do
 
   describe '#answer' do
     context 'Anon' do
-      it 'should kick from #answer' do
+      before do
         put :answer, id: game_w_questions.id,
             letter: game_w_questions.current_game_question.correct_answer_key
+      end
 
+      it 'should response' do
         expect(response.status).not_to eq(200)
+      end
+
+      it 'should redirect' do
         expect(response).to redirect_to(new_user_session_path)
+      end
+
+      it 'should show alert' do
         expect(flash[:alert]).to be
       end
     end
 
     context 'Usual user' do
-      before(:each) { sign_in user }
+      before { sign_in user }
 
       context 'correct answer' do
-        it 'should accept answer' do
-          # передаем параметр params[:letter]
+        let(:game) { assigns(:game) }
+
+        before do
           put :answer, id: game_w_questions.id,
               letter: game_w_questions.current_game_question.correct_answer_key
-          game = assigns(:game)
+        end
 
+        it 'should not finish the game' do
           expect(game.finished?).to be false
+        end
+
+        it 'should get to next level' do
           expect(game.current_level).to be > 0
+        end
+
+        it 'should redirect' do
           expect(response).to redirect_to(game_path(game))
+        end
+
+        it 'should not show flash' do
           expect(flash.empty?).to be true
         end
       end
 
       context 'uncorrect answer' do
-        it 'should not accept answer' do
-          c = game_w_questions.current_level
-          put :answer, id: game_w_questions.id,
-              letter: 'c'
-          game = assigns(:game)
+        let(:game) { assigns(:game) }
+        let(:c) { game_w_questions.current_level }
 
+        before do
+          put :answer, id: game_w_questions.id, letter: 'c'
+        end
+
+        it 'should finish the game' do
           expect(game.finished?).to be true
+        end
+
+        it 'should not go to next level' do
           expect(game.current_level).to be > c - 1
+        end
+
+        it 'should redirect' do
           expect(response).to redirect_to(user)
+        end
+
+        it 'should show flash' do
           expect(flash.empty?).to be false
         end
       end
@@ -147,6 +177,7 @@ RSpec.describe GamesController, type: :controller do
 
     context 'Usual user' do
       before { sign_in user }
+
       it 'takes money' do
         game_w_questions.update_attribute(:current_level, 2)
         put :take_money, id: game_w_questions.id
@@ -166,49 +197,120 @@ RSpec.describe GamesController, type: :controller do
 
   describe '#help' do
     context 'Anon' do
-      it 'kick from #help' do
-        put :help, id: game_w_questions.id
+      before { put :help, id: game_w_questions.id }
 
+      it 'should not response' do
         expect(response.status).not_to eq(200)
+      end
+
+      it 'should redirect' do
         expect(response).to redirect_to(new_user_session_path)
+      end
+
+      it 'should show alert' do
         expect(flash[:alert]).to be
       end
     end
 
     context 'Usual user' do
+      let(:game) { assigns(:game) }
+
       before { sign_in user }
 
-      it 'uses audience help' do
-        # сперва проверяем что в подсказках текущего вопроса пусто
-        expect(game_w_questions.current_game_question.help_hash[:audience_help]).not_to be
-        expect(game_w_questions.audience_help_used).to be false
+      context 'use audience help' do
+        before do
+          expect(game_w_questions.current_game_question.help_hash[:audience_help]).not_to be
+          expect(game_w_questions.audience_help_used).to be false
 
-        # фигачим запрос в контроллер с нужным типом
-        put :help, id: game_w_questions.id, help_type: :audience_help
-        game = assigns(:game)
+          put :help, id: game_w_questions.id, help_type: :audience_help
+        end
 
-        # проверяем, что игра не закончилась, что флажок установился, и подсказка записалась
-        expect(game.finished?).to be false
-        expect(game.audience_help_used).to be true
-        expect(game.current_game_question.help_hash[:audience_help]).to be
-        expect(game.current_game_question.help_hash[:audience_help].keys).to contain_exactly('a', 'b', 'c', 'd')
-        expect(response).to redirect_to(game_path(game))
+        it 'game should not be finished' do
+          expect(game.finished?).to be false
+        end
+
+        it 'should use audience help' do
+          expect(game.audience_help_used).to be true
+        end
+
+        it 'audience help hash should be' do
+          expect(game.current_game_question.help_hash[:audience_help]).to be
+        end
+
+        it 'audience help hash should contain these keys' do
+          expect(game.current_game_question.help_hash[:audience_help].keys).to contain_exactly('a', 'b', 'c', 'd')
+        end
+
+        it 'should redirect' do
+          expect(response).to redirect_to(game_path(game))
+        end
       end
 
-      it 'uses 50/50 help' do
-        expect(game_w_questions.current_game_question.help_hash[:fifty_fifty]).not_to be
-        expect(game_w_questions.fifty_fifty_used).to be_falsey
+      context 'use 50/50' do
+        before do
+          expect(game_w_questions.current_game_question.help_hash[:fifty_fifty]).not_to be
+          expect(game_w_questions.fifty_fifty_used).to be_falsey
 
-        put :help, id: game_w_questions.id, help_type: :fifty_fifty
-        game = assigns(:game)
+          put :help, id: game_w_questions.id, help_type: :fifty_fifty
+        end
 
-        expect(game.finished?).to be false
-        expect(game.fifty_fifty_used).to be true
-        expect(game.current_game_question.help_hash[:fifty_fifty]).to be
-        expect(game.current_game_question.help_hash[:fifty_fifty]).to include(game.current_game_question
-                                                                                  .correct_answer_key)
-        expect(game.current_game_question.help_hash[:fifty_fifty].size).to eq 2
-        expect(response).to redirect_to(game_path(game))
+        it 'game should not be finished' do
+          expect(game.finished?).to be false
+        end
+
+        it 'should use 50/50 help' do
+          expect(game.fifty_fifty_used).to be true
+        end
+
+        it '50/50 help hash should be' do
+          expect(game.current_game_question.help_hash[:fifty_fifty]).to be
+        end
+
+        it '50/50 help hash should contain correct key' do
+          expect(game.current_game_question.help_hash[:fifty_fifty]).to include(game.current_game_question
+                                                                                    .correct_answer_key)
+        end
+
+        it '50/50 help hash should have current size' do
+          expect(game.current_game_question.help_hash[:fifty_fifty].size).to eq 2
+        end
+
+        it 'should redirect' do
+          expect(response).to redirect_to(game_path(game))
+        end
+      end
+
+      context 'use friend call' do
+        before do
+          expect(game_w_questions.current_game_question.help_hash[:friend_call]).not_to be
+          expect(game_w_questions.friend_call_used).to be false
+
+          put :help, id: game_w_questions.id, help_type: :friend_call
+        end
+
+        it 'game should not be finished' do
+          expect(game.finished?).to be false
+        end
+
+        it 'should use friend call help' do
+          expect(game.friend_call_used).to be true
+        end
+
+        it 'should add friend call to help hash' do
+          expect(game.current_game_question.help_hash).to include(:friend_call)
+        end
+
+        it 'should add friend call help with answer key' do
+          expect(%w[a b c d]).to include(game.current_game_question.help_hash[:friend_call].last)
+        end
+
+        it 'game should not be finished' do
+          expect(game.finished?).to be false
+        end
+
+        it 'should redirect' do
+          expect(response).to redirect_to(game_path(game))
+        end
       end
     end
   end
