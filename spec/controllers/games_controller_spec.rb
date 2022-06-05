@@ -23,8 +23,8 @@ RSpec.describe GamesController, type: :controller do
       end
     end
 
-    context 'Usual user' do
-      before { sign_in user } # логиним юзера user с помощью спец. Devise метода sign_in
+    context 'Usual users' do
+      before { sign_in user } # логиним юзера users с помощью спец. Devise метода sign_in
 
       it 'should show the game' do
         get :show, id: game_w_questions.id
@@ -58,7 +58,7 @@ RSpec.describe GamesController, type: :controller do
       end
     end
 
-    context 'Usual user' do
+    context 'Usual users' do
       before { sign_in user }
 
       it 'should create game' do
@@ -108,7 +108,7 @@ RSpec.describe GamesController, type: :controller do
       end
     end
 
-    context 'Usual user' do
+    context 'Usual users' do
       before { sign_in user }
 
       context 'correct answer' do
@@ -175,7 +175,7 @@ RSpec.describe GamesController, type: :controller do
       end
     end
 
-    context 'Usual user' do
+    context 'Usual users' do
       before { sign_in user }
 
       it 'takes money' do
@@ -212,7 +212,7 @@ RSpec.describe GamesController, type: :controller do
       end
     end
 
-    context 'Usual user' do
+    context 'Usual users' do
       let(:game) { assigns(:game) }
 
       before { sign_in user }
@@ -301,7 +301,7 @@ RSpec.describe GamesController, type: :controller do
         end
 
         it 'should add friend call help with answer key' do
-          expect(%w[a b c d]).to include(game.current_game_question.help_hash[:friend_call].last)
+          expect(%w[A B C D]).to include(game.current_game_question.help_hash[:friend_call].last)
         end
 
         it 'game should not be finished' do

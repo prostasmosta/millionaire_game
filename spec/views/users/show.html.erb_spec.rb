@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'users/show', type: :view do
-  context 'when user looks at his page' do
+  context 'when users looks at his page' do
     let!(:current_user) { assign(:user, build_stubbed(:user, name: 'User')) }
 
     before do
@@ -25,7 +25,7 @@ RSpec.describe 'users/show', type: :view do
     end
   end
 
-  context 'when user looks at another users page' do
+  context 'when users looks at another users page' do
     let!(:user) { assign(:user, build_stubbed(:user, name: 'User1')) }
 
     before do
