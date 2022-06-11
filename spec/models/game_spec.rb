@@ -52,7 +52,8 @@ RSpec.describe Game, type: :model do
     describe '#answer_current_question!' do
       context 'when answer is wrong' do
         let(:wrong_answer_key) do
-          %w[a b c d].grep_v ['b']
+          %w[a b c d].grep_v(
+            %w[game_w_questions.current_game_question.correct_answer_key]).sample
         end
 
         before { game_w_questions.answer_current_question!(wrong_answer_key) }
