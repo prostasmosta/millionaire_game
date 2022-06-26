@@ -28,16 +28,9 @@ RSpec.configure do |config|
   # instead of true.
   config.use_transactional_fixtures = true
 
-  # Подключаем девайзовые классы для использвоания в тестах
-  # https://github.com/plataformatec/devise#test-helpers
-  # https://github.com/plataformatec/devise/issues/4133
-
-  # В тестах на контроллеры и представления подключаем специальные
-  # хелперы для авторизации с помощью девайс
   config.include Devise::TestHelpers, type: :controller
   config.include Devise::TestHelpers, type: :view
 
-  # Подключаем в фичах специальные хелперы для авторизации
   config.include Warden::Test::Helpers, type: :feature
 
   # RSpec Rails can automatically mix in different behaviours to your tests
@@ -61,6 +54,5 @@ RSpec.configure do |config|
   # config.filter_gems_from_backtrace("gem name")
 end
 
-# Это нужно, чтобы капибара искала стили и js в правильном месте
 Capybara.asset_host = "http://localhost:3000"
 

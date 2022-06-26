@@ -5,12 +5,10 @@
     </div>
 
     <div class="game-question">
-      <%# Выводим шаблон с текстом вопроса и вариантами ответа %>
       <%= render partial: 'game_question', object: @game_question %>
     </div>
 
     <div class="buffer-top-lg">
-      <%# Выводим шаблон с кнопками для подсказок и информацией о подсказках %>
       <%= render partial: 'help', object: @game_question.help_hash, locals: {game: @game} %>
     </div>
   </div>

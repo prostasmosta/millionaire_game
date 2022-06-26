@@ -1,33 +1,23 @@
 require 'rails_helper'
-require 'support/my_spec_helper' # наш собственный класс с вспомогательными методами
+require 'support/my_spec_helper'
 
 RSpec.describe Game, type: :model do
   let(:user) { create(:user) }
-
-  # игра с прописанными игровыми вопросами
   let(:game_w_questions) { create(:game_with_questions, user: user) }
-
-  # Группа тестов на работу фабрики создания новых игр
   context 'Game Factory' do
     describe '#create_game_for_user!' do
       it 'should create new correct game' do
-        # генерим 60 вопросов с 4х запасом по полю level,
-        # чтобы проверить работу RANDOM при создании игры
         generate_questions(60)
-
         game = nil
-        # создaли игру, обернули в блок, на который накладываем проверки
         expect {
           game = Game.create_game_for_user!(user)
-        }.to change(Game, :count).by(1).and(# проверка: Game.count изменился на 1 (создали в базе 1 игру)
-          change(GameQuestion, :count).by(15).and(# GameQuestion.count +15
-            change(Question, :count).by(0) # Game.count не должен измениться
+        }.to change(Game, :count).by(1).and(
+          change(GameQuestion, :count).by(15).and(
+            change(Question, :count).by(0)
           )
         )
-        # проверяем статус и поля
         expect(game.user).to eq(user)
         expect(game.status).to eq(:in_progress)
-        # проверяем корректность массива игровых вопросов
         expect(game.game_questions.size).to eq(15)
         expect(game.game_questions.map(&:level)).to eq (0..14).to_a
       end

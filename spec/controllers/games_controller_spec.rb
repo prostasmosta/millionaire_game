@@ -1,12 +1,6 @@
 require 'rails_helper'
-require 'support/my_spec_helper' # наш собственный класс с вспомогательными методами
+require 'support/my_spec_helper'
 
-# Тестовый сценарий для игрового контроллера
-# Самые важные здесь тесты:
-#   1. на авторизацию (чтобы к чужим юзерам не утекли не их данные)
-#   2. на четкое выполнение самых важных сценариев (требований) приложения
-#   3. на передачу граничных/неправильных данных в попытке сломать контроллер
-#
 RSpec.describe GamesController, type: :controller do
   let(:user) { create(:user) }
   let(:admin) { create(:user, is_admin: true) }

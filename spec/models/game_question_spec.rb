@@ -1,14 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe GameQuestion, type: :model do
-
-  # задаем локальную переменную game_question, доступную во всех тестах этого сценария
-  # она будет создана на фабрике заново для каждого блока it, где она вызывается
   let(:game_question) { create(:game_question, a: 2, b: 1, c: 4, d: 3) }
-
-  # группа тестов на игровое состояние объекта вопроса
   context 'game status' do
-    # тест на правильную генерацию хэша с вариантами
     describe '#variants' do
       it 'should return variants' do
         expect(game_question.variants).to eq({ 'a' => game_question.question.answer2,
@@ -53,14 +47,6 @@ RSpec.describe GameQuestion, type: :model do
       end
     end
   end
-
-  # help_hash у нас имеет такой формат:
-  # {
-  #   fifty_fifty: ['a', 'b'], # При использовании подсказски остались варианты a и b
-  #   audience_help: {'a' => 42, 'c' => 37 ...}, # Распределение голосов по вариантам a, b, c, d
-  #   friend_call: 'Василий Петрович считает, что правильный ответ A'
-  # }
-  #
 
   context 'users helpers' do
     describe '#add_audience_help' do

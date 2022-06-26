@@ -1,9 +1,3 @@
-# (с) goodprogrammer.ru
-#
-# Файл для населения БД начальными данными, чтобы было с чем играться
-#
-# выполняется в консоли rake db:seed
-
 Question.create(level: 0, text: '2 + 2 = ...', answer1: '4', answer2: '5', answer3: 'точно не известно', answer4: '-1')
 Question.create(level: 1, text: 'А?', answer1: 'Б!', answer2: 'чо', answer3: 'хз', answer4: '-1')
 Question.create(level: 2, text: 'Семки есть?', answer1: '42', answer2: 'Кепка', answer3: 'хз', answer4: 'Абибас')

@@ -1,5 +1,3 @@
-<%# Шаблон, которые будет выводить вопрос и варианты ответа на странице игры %>
-
 <% game = game_question.game %>
 <% help = game_question.help_hash %>
 
@@ -9,7 +7,6 @@
 
 <div class="row">
   <% game_question.variants.each do |letter, variant| %>
-    <%# Если была использована подсказка 50/50, нам нужно проверить, есть ли вариант среди оставшихся %>
     <% if !help.key?(:fifty_fifty) || help[:fifty_fifty].include?(letter) %>
       <div class="col-md-6 buffer-top">
         <%= link_to content_tag(:span, letter.upcase, class: 'variant') + ": #{variant}",
